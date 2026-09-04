@@ -10,6 +10,7 @@ import {
   ExternalLink,
   Smartphone,
   Globe,
+  AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { campusService } from "@/services/campusService";
@@ -52,7 +53,11 @@ function SettingsSection({
 }
 
 function SettingsPage() {
-  const { data: profile, isLoading } = useQuery({
+  const {
+    data: profile,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["profile"],
     queryFn: campusService.getProfile,
   });
@@ -78,6 +83,23 @@ function SettingsPage() {
     setAppearance((prev) => ({ ...prev, [key]: !prev[key] }));
     toast.success("Appearance preference updated");
   };
+
+  if (isError) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <EmptyState
+          icon={AlertCircle}
+          title="Settings load failed"
+          description="We couldn't load your profile settings. Please try again."
+          action={
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Retry
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

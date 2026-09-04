@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Plus, ListChecks, Filter, Search } from "lucide-react";
+import { Plus, ListChecks, Filter, Search, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { campusService } from "@/services/campusService";
 import { TaskItem } from "@/components/campus/task-item";
@@ -61,7 +61,11 @@ function TasksPage() {
   const [newTaskPriority, setNewTaskPriority] = useState<TaskPriority>("medium");
   const [newTaskDueDate, setNewTaskDueDate] = useState("");
 
-  const { data: tasks, isLoading } = useQuery({
+  const {
+    data: tasks,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["tasks"],
     queryFn: campusService.getTasks,
   });
@@ -73,19 +77,38 @@ function TasksPage() {
     }
   }, [tasks, localTasks.length]);
 
-  const handleToggleTask = (id: string) => {
-    setLocalTasks((prev) =>
-      prev.map((t) =>
-        t.id === id
-          ? { ...t, completed: !t.completed, overdue: !t.completed ? false : t.overdue }
-          : t,
-      ),
+  const filteredTasks = useMemo(() => {
+    return localTasks.filter((t) => {
+      const matchesSearch =
+        t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.subject.toLowerCase().includes(searchQuery.toLowerCase());
+
+      if (!matchesSearch) return false;
+
+      if (filter === "all") return true;
+      if (filter === "pending") return !t.completed;
+      if (filter === "completed") return t.completed;
+      if (filter === "overdue") return t.overdue && !t.completed;
+      return true;
+    });
+  }, [localTasks, filter, searchQuery]);
+
+  if (isError) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <EmptyState
+          icon={AlertCircle}
+          title="Tasks load failed"
+          description="We couldn't load your academic tasks. Please try again."
+          action={
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Retry
+            </Button>
+          }
+        />
+      </div>
     );
-    const task = localTasks.find((t) => t.id === id);
-    if (task) {
-      toast.success(task.completed ? "Task marked as pending" : "Task marked as complete");
-    }
-  };
+  }
 
   const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,21 +135,19 @@ function TasksPage() {
     setNewTaskDueDate("");
   };
 
-  const filteredTasks = useMemo(() => {
-    return localTasks.filter((t) => {
-      const matchesSearch =
-        t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.subject.toLowerCase().includes(searchQuery.toLowerCase());
-
-      if (!matchesSearch) return false;
-
-      if (filter === "all") return true;
-      if (filter === "pending") return !t.completed;
-      if (filter === "completed") return t.completed;
-      if (filter === "overdue") return t.overdue && !t.completed;
-      return true;
-    });
-  }, [localTasks, filter, searchQuery]);
+  const handleToggleTask = (id: string) => {
+    setLocalTasks((prev) =>
+      prev.map((t) =>
+        t.id === id
+          ? { ...t, completed: !t.completed, overdue: !t.completed ? false : t.overdue }
+          : t,
+      ),
+    );
+    const task = localTasks.find((t) => t.id === id);
+    if (task) {
+      toast.success(task.completed ? "Task marked as pending" : "Task marked as complete");
+    }
+  };
 
   if (isLoading && localTasks.length === 0) {
     return (

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarDays, Clock, MapPin, ChevronRight, Info } from "lucide-react";
+import { CalendarDays, Clock, ChevronRight, Info, AlertCircle } from "lucide-react";
 import { campusService } from "@/services/campusService";
 import { Calendar } from "@/components/ui/calendar";
 import { EventItem } from "@/components/campus/event-item";
@@ -24,10 +24,31 @@ export const Route = createFileRoute("/_app/calendar")({
 function CalendarPage() {
   const [date, setDate] = useState<Date | undefined>(new Date("2026-09-04"));
 
-  const { data: events, isLoading } = useQuery({
+  const {
+    data: events,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["events"],
     queryFn: campusService.getCalendarEvents,
   });
+
+  if (isError) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <EmptyState
+          icon={AlertCircle}
+          title="Calendar load failed"
+          description="We couldn't load your academic events. Please try again."
+          action={
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Retry
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

@@ -7,6 +7,7 @@ import {
   CheckSquare,
   GraduationCap,
   ListChecks,
+  AlertCircle,
 } from "lucide-react";
 import { StatCard } from "@/components/campus/stat-card";
 import { TaskItem } from "@/components/campus/task-item";
@@ -76,37 +77,59 @@ function ViewAll({ to, label }: { to: string; label: string }) {
 }
 
 function DashboardPage() {
-  const { data: profile } = useQuery({
+  const { data: profile, isError: profileError } = useQuery({
     queryKey: ["profile"],
     queryFn: campusService.getProfile,
   });
 
-  const { data: stats } = useQuery({
+  const { data: stats, isError: statsError } = useQuery({
     queryKey: ["stats"],
     queryFn: campusService.getStats,
   });
 
-  const { data: schedule } = useQuery({
+  const { data: schedule, isError: scheduleError } = useQuery({
     queryKey: ["schedule"],
     queryFn: campusService.getTodaySchedule,
   });
 
-  const { data: tasks } = useQuery({
+  const { data: tasks, isError: tasksError } = useQuery({
     queryKey: ["tasks"],
     queryFn: campusService.getTasks,
   });
 
-  const { data: courses } = useQuery({
+  const { data: courses, isError: coursesError } = useQuery({
     queryKey: ["courses"],
     queryFn: campusService.getCourses,
   });
 
-  const { data: events } = useQuery({
+  const { data: events, isError: eventsError } = useQuery({
     queryKey: ["events"],
     queryFn: campusService.getCalendarEvents,
   });
 
   const isLoading = !profile || !stats || !schedule || !tasks || !courses || !events;
+  const isError =
+    profileError || statsError || scheduleError || tasksError || coursesError || eventsError;
+
+  if (isError) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center">
+        <EmptyState
+          icon={AlertCircle}
+          title="Something went wrong"
+          description="We couldn't load your dashboard data. Please try again later."
+          action={
+            <button
+              onClick={() => window.location.reload()}
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              Retry
+            </button>
+          }
+        />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -126,6 +149,11 @@ function DashboardPage() {
   }
 
   const upcomingTasks = tasks.filter((t) => !t.completed).slice(0, 4);
+  const todayFormatted = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
     <div className="space-y-6">
@@ -171,7 +199,7 @@ function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <SectionCard
           title="Today's schedule"
-          description="Friday, September 4"
+          description={todayFormatted}
           className="lg:col-span-2"
           action={<ViewAll to="/calendar" label="Calendar" />}
         >

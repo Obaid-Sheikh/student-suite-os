@@ -39,14 +39,3 @@ export const campusService = {
   getCalendarEvents: async (): Promise<CalendarEvent[]> => mockEvents,
   getTodaySchedule: async (): Promise<ScheduleItem[]> => mockSchedule,
 };
-
-/** Synchronous snapshots used by this frontend-only prototype. */
-export const snapshot = {
-  profile: mockProfile,
-  stats: mockStats,
-  courses: mockCourses,
-  assignments: mockAssignments,
-  tasks: mockTasks,
-  events: mockEvents,
-  schedule: mockSchedule,
-};

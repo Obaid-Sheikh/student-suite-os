@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Bell, ChevronDown, Menu, Search } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
@@ -12,12 +13,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CampusLogo, SidebarNav } from "./app-sidebar";
-import { snapshot } from "@/services/campusService";
+import { campusService } from "@/services/campusService";
 
 export function AppHeader({ title }: { title: string }) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const profile = snapshot.profile;
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: campusService.getProfile,
+  });
+
+  if (!profile) return null;
 
   return (
     <header className="sticky top-0 z-30 border-b bg-card/90 backdrop-blur">

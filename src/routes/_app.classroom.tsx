@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { GraduationCap, BookOpen, Filter } from "lucide-react";
+import { GraduationCap, BookOpen, Filter, AlertCircle } from "lucide-react";
 import { campusService } from "@/services/campusService";
 import { CourseCard } from "@/components/campus/course-card";
 import { FilterTabs, type FilterOption } from "@/components/campus/filter-tabs";
 import { StatusBadge, PriorityBadge } from "@/components/campus/status-badge";
 import { EmptyState, LoadingState } from "@/components/campus/states";
+import { Button } from "@/components/ui/button";
 import { type TaskStatus } from "@/data/types";
 import { cn } from "@/lib/utils";
 
@@ -34,15 +35,40 @@ const filterOptions: FilterOption<TaskStatus | "all">[] = [
 function ClassroomPage() {
   const [statusFilter, setStatusFilter] = useState<TaskStatus | "all">("all");
 
-  const { data: courses, isLoading: coursesLoading } = useQuery({
+  const {
+    data: courses,
+    isLoading: coursesLoading,
+    isError: coursesError,
+  } = useQuery({
     queryKey: ["courses"],
     queryFn: campusService.getCourses,
   });
 
-  const { data: assignments, isLoading: assignmentsLoading } = useQuery({
+  const {
+    data: assignments,
+    isLoading: assignmentsLoading,
+    isError: assignmentsError,
+  } = useQuery({
     queryKey: ["assignments"],
     queryFn: campusService.getAssignments,
   });
+
+  if (coursesError || assignmentsError) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <EmptyState
+          icon={AlertCircle}
+          title="Classroom load failed"
+          description="We couldn't load your course data. Please try again."
+          action={
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Retry
+            </Button>
+          }
+        />
+      </div>
+    );
+  }
 
   if (coursesLoading || assignmentsLoading) {
     return (
