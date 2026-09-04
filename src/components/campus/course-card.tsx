@@ -15,9 +15,7 @@ export function CourseCard({ course }: { course: Course }) {
     course.totalAssignments === 0
       ? 0
       : Math.round(
-          ((course.totalAssignments - course.pendingAssignments) /
-            course.totalAssignments) *
-            100,
+          ((course.totalAssignments - course.pendingAssignments) / course.totalAssignments) * 100,
         );
 
   return (
@@ -26,9 +24,7 @@ export function CourseCard({ course }: { course: Course }) {
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h3 className="truncate text-base font-semibold text-foreground">
-              {course.name}
-            </h3>
+            <h3 className="truncate text-base font-semibold text-foreground">{course.name}</h3>
             <p className="mt-0.5 text-xs font-medium text-muted-foreground">
               {course.code} · {course.section}
             </p>
@@ -54,18 +50,14 @@ export function CourseCard({ course }: { course: Course }) {
           <span
             className={cn(
               "font-medium",
-              course.pendingAssignments > 0
-                ? "text-foreground"
-                : "text-success",
+              course.pendingAssignments > 0 ? "text-foreground" : "text-success",
             )}
           >
             {course.pendingAssignments > 0
               ? `${course.pendingAssignments} pending`
               : "All caught up"}
           </span>
-          <span className="text-xs text-muted-foreground">
-            {course.totalAssignments} total
-          </span>
+          <span className="text-xs text-muted-foreground">{course.totalAssignments} total</span>
         </div>
       </div>
     </article>

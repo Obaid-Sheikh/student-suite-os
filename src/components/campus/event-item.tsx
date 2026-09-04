@@ -35,9 +35,7 @@ export function EventItem({
       )}
     >
       <div className="min-w-0">
-        <p className="truncate text-sm font-medium text-foreground">
-          {event.title}
-        </p>
+        <p className="truncate text-sm font-medium text-foreground">{event.title}</p>
         <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
           {showDate ? <span>{formatDate(event.date)}</span> : null}
           <span className="inline-flex items-center gap-1">

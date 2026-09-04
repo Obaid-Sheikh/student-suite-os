@@ -64,9 +64,7 @@ export function AppSidebar() {
       </div>
       <div className="border-t p-4">
         <div className="rounded-lg bg-accent p-3">
-          <p className="text-xs font-semibold text-accent-foreground">
-            Prototype mode
-          </p>
+          <p className="text-xs font-semibold text-accent-foreground">Prototype mode</p>
           <p className="mt-1 text-xs text-muted-foreground">
             Showing sample academic data. Connect Google in Settings later.
           </p>

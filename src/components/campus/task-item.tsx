@@ -4,13 +4,7 @@ import { PriorityBadge } from "./status-badge";
 import type { Task } from "@/data/types";
 import { cn } from "@/lib/utils";
 
-export function TaskItem({
-  task,
-  onToggle,
-}: {
-  task: Task;
-  onToggle?: (id: string) => void;
-}) {
+export function TaskItem({ task, onToggle }: { task: Task; onToggle?: (id: string) => void }) {
   return (
     <li className="flex flex-col gap-3 border-b px-4 py-3.5 last:border-b-0 transition-colors hover:bg-secondary/60 sm:flex-row sm:items-center sm:gap-4 sm:px-5">
       <div className="flex min-w-0 flex-1 items-start gap-3">
@@ -43,9 +37,7 @@ export function TaskItem({
           >
             {task.title}
           </p>
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">
-            {task.subject}
-          </p>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">{task.subject}</p>
         </div>
       </div>
 

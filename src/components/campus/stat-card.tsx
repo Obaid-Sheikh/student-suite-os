@@ -24,9 +24,7 @@ export function StatCard({
   return (
     <div className="rounded-xl border bg-card p-4 shadow-card transition-shadow hover:shadow-lift sm:p-5">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          {label}
-        </p>
+        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{label}</p>
         <span
           className={cn(
             "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",

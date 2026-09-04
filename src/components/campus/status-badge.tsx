@@ -8,10 +8,8 @@ const base =
 const statusStyles: Record<TaskStatus, string> = {
   "not-started": "border-border bg-muted text-muted-foreground",
   "in-progress": "border-accent bg-accent text-accent-foreground",
-  submitted:
-    "border-transparent bg-success/12 text-success [&_svg]:text-success",
-  overdue:
-    "border-transparent bg-destructive/12 text-destructive [&_svg]:text-destructive",
+  submitted: "border-transparent bg-success/12 text-success [&_svg]:text-success",
+  overdue: "border-transparent bg-destructive/12 text-destructive [&_svg]:text-destructive",
 };
 
 const statusLabels: Record<TaskStatus, string> = {
@@ -28,13 +26,7 @@ const statusIcons: Record<TaskStatus, typeof CircleDashed> = {
   overdue: AlertTriangle,
 };
 
-export function StatusBadge({
-  status,
-  className,
-}: {
-  status: TaskStatus;
-  className?: string;
-}) {
+export function StatusBadge({ status, className }: { status: TaskStatus; className?: string }) {
   const Icon = statusIcons[status];
   return (
     <span className={cn(base, statusStyles[status], className)}>
@@ -81,13 +73,7 @@ export const eventTypeLabels: Record<EventType, string> = {
   meeting: "Meeting",
 };
 
-export function EventTypeBadge({
-  type,
-  className,
-}: {
-  type: EventType;
-  className?: string;
-}) {
+export function EventTypeBadge({ type, className }: { type: EventType; className?: string }) {
   const styles: Record<EventType, string> = {
     lecture: "border-accent bg-accent text-accent-foreground",
     lab: "border-border bg-secondary text-secondary-foreground",

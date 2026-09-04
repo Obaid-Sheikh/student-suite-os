@@ -24,12 +24,7 @@ export function AppHeader({ title }: { title: string }) {
       <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
         <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              aria-label="Open navigation"
-            >
+            <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>

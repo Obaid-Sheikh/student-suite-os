@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   AlarmClock,
   ArrowRight,
@@ -10,8 +11,8 @@ import {
 import { StatCard } from "@/components/campus/stat-card";
 import { TaskItem } from "@/components/campus/task-item";
 import { EventItem } from "@/components/campus/event-item";
-import { EmptyState } from "@/components/campus/states";
-import { snapshot } from "@/services/campusService";
+import { EmptyState, LoadingState } from "@/components/campus/states";
+import { campusService } from "@/services/campusService";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_app/dashboard")({
@@ -47,9 +48,7 @@ function SectionCard({
   className?: string;
 }) {
   return (
-    <section
-      className={cn("rounded-xl border bg-card shadow-card", className)}
-    >
+    <section className={cn("rounded-xl border bg-card shadow-card", className)}>
       <div className="flex items-start justify-between gap-3 border-b px-5 py-4">
         <div>
           <h2 className="text-sm font-semibold text-foreground">{title}</h2>
@@ -77,7 +76,55 @@ function ViewAll({ to, label }: { to: string; label: string }) {
 }
 
 function DashboardPage() {
-  const { profile, stats, schedule, tasks, courses, events } = snapshot;
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: campusService.getProfile,
+  });
+
+  const { data: stats } = useQuery({
+    queryKey: ["stats"],
+    queryFn: campusService.getStats,
+  });
+
+  const { data: schedule } = useQuery({
+    queryKey: ["schedule"],
+    queryFn: campusService.getTodaySchedule,
+  });
+
+  const { data: tasks } = useQuery({
+    queryKey: ["tasks"],
+    queryFn: campusService.getTasks,
+  });
+
+  const { data: courses } = useQuery({
+    queryKey: ["courses"],
+    queryFn: campusService.getCourses,
+  });
+
+  const { data: events } = useQuery({
+    queryKey: ["events"],
+    queryFn: campusService.getCalendarEvents,
+  });
+
+  const isLoading = !profile || !stats || !schedule || !tasks || !courses || !events;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="h-20 w-1/3 animate-pulse rounded-lg bg-muted" />
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-32 rounded-xl border bg-card animate-pulse" />
+          ))}
+        </div>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2 h-64 rounded-xl border bg-card animate-pulse" />
+          <div className="h-64 rounded-xl border bg-card animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+
   const upcomingTasks = tasks.filter((t) => !t.completed).slice(0, 4);
 
   return (
@@ -155,9 +202,7 @@ function DashboardPage() {
                     <p
                       className={cn(
                         "text-sm font-medium",
-                        item.status === "done"
-                          ? "text-muted-foreground"
-                          : "text-foreground",
+                        item.status === "done" ? "text-muted-foreground" : "text-foreground",
                       )}
                     >
                       {item.title}
@@ -168,9 +213,7 @@ function DashboardPage() {
                       </span>
                     ) : null}
                     {item.status === "done" ? (
-                      <span className="text-[11px] font-medium text-muted-foreground">
-                        Done
-                      </span>
+                      <span className="text-[11px] font-medium text-muted-foreground">Done</span>
                     ) : null}
                   </div>
                   <p className="mt-0.5 text-xs text-muted-foreground">
@@ -219,9 +262,7 @@ function DashboardPage() {
                   {course.code.split("-")[0]}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-foreground">
-                    {course.name}
-                  </p>
+                  <p className="truncate text-sm font-medium text-foreground">{course.name}</p>
                   <p className="truncate text-xs text-muted-foreground">
                     {course.instructor} · {course.code}
                   </p>
@@ -229,14 +270,10 @@ function DashboardPage() {
                 <span
                   className={cn(
                     "shrink-0 text-xs font-medium",
-                    course.pendingAssignments > 0
-                      ? "text-foreground"
-                      : "text-success",
+                    course.pendingAssignments > 0 ? "text-foreground" : "text-success",
                   )}
                 >
-                  {course.pendingAssignments > 0
-                    ? `${course.pendingAssignments} pending`
-                    : "Clear"}
+                  {course.pendingAssignments > 0 ? `${course.pendingAssignments} pending` : "Clear"}
                 </span>
               </li>
             ))}
